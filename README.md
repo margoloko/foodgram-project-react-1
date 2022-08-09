@@ -40,24 +40,3 @@ Django REST Framework v:
 PostgreSQL v:
 nginx v:
 
-# Как импортировать данные из своего csv файла?
-Для начала убедитесь, что первая строчка вашего csv файла совпадает с названиями полей в модели. Если на первой строчке нет названия полей или они неправильные, исправьте, прежде чем приступать к импортированию.
-
-Импортирование с помощью скрипта
-Заходим в shell:
-docker-compose exec backend python manage.py shell
-Импортируем нужные модели:
-from recipes.models import Ingredient, Tags
-Импортируем скрипт:
-from scripts.import_data import create_models
-Запускаем скрипт с тремя параметрами:
-file_path — путь до вашего csv файла,
-
-model — класс модели из импортированных ранее,
-
-print_errors — нужно ли распечатать каждую ошибку подробно? (True or False)
-
-Пример:
-
-create_models('../data/ingredients.csv', Ingredient, True)
-
