@@ -1,3 +1,26 @@
 from django.contrib import admin
+from django.contrib.admin import register
 
-# Register your models here.
+from .models import AmountIngredients, Ingredient, Recipe, Tag
+
+
+class IngredientRecipeInLine(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 3
+
+@admin.register(Tag, AmountIngredients)
+class OtherAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit',)
+    list_filter = ('name',)
+    save_on_top = True
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'author',)
+    list_filter = ('name', 'author__username', 'tags__name')
+    save_on_top = True
+    inlines = (IngredientRecipeInLine, )
