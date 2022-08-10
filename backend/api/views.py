@@ -37,3 +37,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPagePagination
+    permission_classes = (AllowAny,)

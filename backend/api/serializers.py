@@ -7,7 +7,7 @@ from requests import request
 from rest_framework.serializers import ModelSerializer, ReadOnlyField, SerializerMethodField, ValidationError, EmailField, CharField
 from rest_framework.validators import UniqueValidator
 #from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.models import Ingredient, Tag
+from recipes.models import Ingredient, Recipe, Tag
 #from users.models import User
 
 #User = get_user_model()
@@ -41,3 +41,9 @@ class RecipeSerializer(ModelSerializer):
     #is_in_shopping_cart = SerializerMethodField()
     #is_favorited = SerializerMethodField()
     image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'tags', 'author', 'ingredients',
+                  #'is_favorited', 'is_in_shopping_cart',
+                  'name', 'image', 'text', 'cooking_time')
