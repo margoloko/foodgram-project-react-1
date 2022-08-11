@@ -4,9 +4,9 @@ from django.contrib.admin import register
 from .models import AmountIngredients, Ingredient, Recipe, Tag
 
 
-class IngredientRecipeInLine(admin.TabularInline):
-    model = Recipe.ingredients.through
-    extra = 3
+#class IngredientRecipeInLine(admin.TabularInline):
+ #   model = Recipe.ingredients.through
+  #  extra = 3
 
 @admin.register(Tag, AmountIngredients)
 class OtherAdmin(admin.ModelAdmin):
@@ -22,5 +22,5 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author',)
     list_filter = ('name', 'author__username', 'tags__name')
-    save_on_top = True
-    inlines = (IngredientRecipeInLine, )
+    #save_on_top = True
+    #inlines = (IngredientRecipeInLine, )

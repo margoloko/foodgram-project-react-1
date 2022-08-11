@@ -93,6 +93,21 @@ class AmountIngredients(models.Model):
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Количество ингридиентов'
 
-
     def __str__(self) -> str:
         return f'{self.amount} {self.ingredients}'
+
+
+class Favorite(models.Model):
+    """Модель списка избранного."""
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,                             
+                             verbose_name='Пользователь',
+                             related_name='favorite')
+    recipe = models.ForeignKey(Recipe,
+                                on_delete=models.CASCADE,                                
+                                verbose_name='',
+                                related_name='favorite')
+                    
+    class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
