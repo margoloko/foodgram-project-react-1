@@ -23,22 +23,24 @@ class ListRetrieveViewSet(mixins.ListModelMixin,
 
 
 class UsersViewSet(UserViewSet):
-    """Класс-вьюсет для модели User."""
+    """Вьюсет для модели пользователей."""
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    search_fields = ('email', 'username')
+    search_fields = ('username', 'email')
 
 
 class TagViewSet(ListRetrieveViewSet):
+    """Вьюсет для модели тэгов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
 
 
 class IngredientViewSet(ListRetrieveViewSet):
+    """Вьюсет для модели ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
@@ -47,10 +49,11 @@ class IngredientViewSet(ListRetrieveViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AllowAny,)
     #permission_classes = (AdminOrAuthor,)
-    #filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
     #filterset_fields = ('is_favorited', 'author', 'is_in_shopping_cart', 'tags',)

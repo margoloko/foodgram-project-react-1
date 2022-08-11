@@ -1,4 +1,5 @@
 #from requests import request
+from django.db.models import F
 from wsgiref.validate import validator
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
@@ -9,8 +10,8 @@ from rest_framework.serializers import ValidationError, IntegerField, PrimaryKey
 from rest_framework.validators import UniqueValidator
 #from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.models import AmountIngredients, Ingredient, Recipe, Tag
-from users.models import User
+from recipes.models import AmountIngredients, Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from users.models import Follow, User
 
 #User = get_user_model()
 
@@ -29,11 +30,18 @@ class CreateUserSerializer(UserCreateSerializer):
 class UsersSerializer(UserSerializer):
     """Сериализатор пользователя."""
     is_subscribed = SerializerMethodField()
+
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
                   'first_name', 'last_name',
                   'is_subscribed')
+
+    def get_is_subscribed(self, obj):
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            return Follow.objects.filter(user=user, author=obj).exists()
+        return False
 
 
 class TagSerializer(ModelSerializer):
@@ -52,32 +60,10 @@ class IngredientSerializer(ModelSerializer):
         read_only_fields = ['id', 'name', 'measurement_unit',]
 
 
-class IngredientAmountSerializer(ModelSerializer):
-    """Сериализатор количества ингредиентов."""
-    #ingredient = IngredientSerializer(many=True)
-    id = IntegerField()
-    #name = ReadOnlyField(source='ingredient.name')
-    #measurement_unit = ReadOnlyField(source='ingredient.measurement_unit'    )
-    #amount = IntegerField()
-    
-
-    class Meta:
-        model = AmountIngredients
-        fields = ('id', 'amount')
-    def to_representation(self, instance):
-        representation = IngredientSerializer(instance.amount_ingredient).data
-        representation['amount'] = instance.amount
-        return representation
-
-        
-
-
-
 class RecipeSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
     author = UsersSerializer(read_only=True)
-    ingredients = IngredientSerializer(many=True)#, source='ingredient')
-                                        #read_only=True,)
+    ingredients = SerializerMethodField()
     tags = TagSerializer(many=True, read_only=True)
     is_in_shopping_cart = SerializerMethodField()
     is_favorited = SerializerMethodField()
@@ -91,17 +77,20 @@ class RecipeSerializer(ModelSerializer):
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
-        if user.is_authenticated:
-            #!!!!!!!!!!
-            return user.carts.filter(id=obj.id).exists()
+        if user.is_authenticated:            
+            return ShoppingCart.objects.filter(
+                user=user, recipe=obj).exists()
         return False
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if user.is_authenticated:
-            return user.favorites.filter(id=obj.id).exists() #!!!!!!!!!!
+            return Favorite.objects.filter(
+                user=user, recipe=obj).exists()
         return False
 
- 
-
-  
+    def get_ingredients(self, obj):
+        ingredients = obj.ingredients.values(
+            'id', 'name', 'measurement_unit', amount=F('amount_ingredient__amount')
+        )
+        return ingredients

@@ -57,7 +57,7 @@ class Recipe(models.Model):
     text = models.TextField('Описание',)
     ingredients = models.ManyToManyField(Ingredient,
                                          verbose_name='Список ингредиентов',
-                                         through='recipes.AmountIngredients',
+                                         through='AmountIngredients',
                                          related_name='recipes',)
     tags = models.ManyToManyField(Tag,
                                   related_name='recipes',
@@ -104,9 +104,9 @@ class Favorite(models.Model):
                              verbose_name='Пользователь',
                              related_name='favorite')
     recipe = models.ForeignKey(Recipe,
-                                on_delete=models.CASCADE,                                
-                                verbose_name='Рецепт',
-                                related_name='favorite')
+                               on_delete=models.CASCADE,                                
+                               verbose_name='Рецепт',
+                               related_name='favorite')
                     
     class Meta:
         verbose_name = 'Избранный рецепт'
@@ -120,9 +120,9 @@ class ShoppingCart(models.Model):
                              verbose_name='Пользователь',
                              related_name='shopping_cart')
     recipe = models.ForeignKey(Recipe,
-                                on_delete=models.CASCADE,                                
-                                verbose_name='Рецепт',
-                                related_name='shopping_cart')
+                               on_delete=models.CASCADE,                                
+                               verbose_name='Рецепт',
+                               related_name='shopping_cart')
                     
     class Meta:
         verbose_name = 'Список покупок'

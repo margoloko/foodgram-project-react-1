@@ -8,7 +8,6 @@ USER_HELP = ('Обязательно для заполнения. '
     f'Максимум {MAX_LEN_FIELD} букв.')
 
 
-
 class User(AbstractUser):
     '''Модель для пользователя.'''
     username = models.CharField('Уникальный юзернейм',
@@ -32,7 +31,6 @@ class User(AbstractUser):
                                  max_length=MAX_LEN_FIELD,
                                  blank=False,
                                  help_text=USER_HELP)
-
 
 
     class Meta:
