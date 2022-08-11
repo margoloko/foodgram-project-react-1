@@ -118,6 +118,18 @@ REST_FRAMEWORK = {
     ],
 }
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'HIDE_USERS': False,
+    'SERIALIZERS': {'user': ('api.serializers.UsersSerializer'),
+                    #'user_list': ('api.serializers.UsersSerializer'),
+                    'user_create': ('api.serializers.CreateUserSerializer'),
+                    'current_user': ('api.serializers.UsersSerializer')
+                    },
+    'PERMISSIONS': {'user': ('rest_framework.permissions.AllowAny'),
+                    #'user_list': ('rest_framework.permissions.AllowAny'),
+                    },
+}
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
