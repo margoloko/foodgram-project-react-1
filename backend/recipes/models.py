@@ -44,7 +44,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    '''Модель для рецептов.'''
+    '''Модель рецептов.'''
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -105,9 +105,24 @@ class Favorite(models.Model):
                              related_name='favorite')
     recipe = models.ForeignKey(Recipe,
                                 on_delete=models.CASCADE,                                
-                                verbose_name='',
+                                verbose_name='Рецепт',
                                 related_name='favorite')
                     
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+
+
+class ShoppingCart(models.Model):
+    """Модель списка избранного."""
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,                             
+                             verbose_name='Пользователь',
+                             related_name='shopping_cart')
+    recipe = models.ForeignKey(Recipe,
+                                on_delete=models.CASCADE,                                
+                                verbose_name='Рецепт',
+                                related_name='shopping_cart')
+                    
+    class Meta:
+        verbose_name = 'Список покупок'

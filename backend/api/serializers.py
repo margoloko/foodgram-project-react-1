@@ -27,7 +27,7 @@ class CreateUserSerializer(UserCreateSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 class UsersSerializer(UserSerializer):
-    """."""
+    """Сериализатор пользователя."""
     is_subscribed = SerializerMethodField()
     class Meta:
         model = User
@@ -45,7 +45,7 @@ class TagSerializer(ModelSerializer):
 
 
 class IngredientSerializer(ModelSerializer):
-    """."""
+    """Сериализатор для ингредиентов."""
     class Meta:
         model = Ingredient
         fields = '__all__'
@@ -53,7 +53,7 @@ class IngredientSerializer(ModelSerializer):
 
 
 class IngredientAmountSerializer(ModelSerializer):
-    """."""
+    """Сериализатор количества ингредиентов."""
     #ingredient = IngredientSerializer(many=True)
     id = IntegerField()
     #name = ReadOnlyField(source='ingredient.name')
@@ -74,7 +74,7 @@ class IngredientAmountSerializer(ModelSerializer):
 
 
 class RecipeSerializer(ModelSerializer):
-    """."""
+    """Сериализатор для рецептов."""
     author = UsersSerializer(read_only=True)
     ingredients = IngredientSerializer(many=True)#, source='ingredient')
                                         #read_only=True,)
