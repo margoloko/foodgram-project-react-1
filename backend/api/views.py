@@ -53,18 +53,9 @@ class IngredientViewSet(ListRetrieveViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
-    #serializer_class = RecipeSerializer
+    serializer_class = RecipeSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AllowAny,)
     #permission_classes = (AdminOrAuthor,)
     filter_backends = (DjangoFilterBackend,)
-    #filterset_fields = ('is_favorited', 'author', 'is_in_shopping_cart', 'tags',)
-
-    def get_serializer(self):
-        if self.request.method == 'GET':
-            return RecipeSerializer
-        return RecipeCreateSerializer
-
-    @action(methods=['POST'], detail=True)
-    def register(self, request):
-        serialized = UserSerializer(data=request.data)
+    filterset_fields = ('is_favorited', 'author', 'is_in_shopping_cart', 'tags',)

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.admin import register
 
-from .models import AmountIngredients, Ingredient, Recipe, Tag
+from .models import AmountIngredients, Ingredient, Recipe, Tag, ShoppingCart, Favorite
 
 
 admin.site.unregister(Group)
@@ -31,3 +31,17 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('name', 'author__username', 'tags__name')
     save_on_top = True
     inlines = (IngredientRecipeInLine, )
+
+
+@register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe',)
+    list_filter = ('user',)
+    save_on_top = True
+
+
+@register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe',)
+    list_filter = ('user',)
+    save_on_top = True
