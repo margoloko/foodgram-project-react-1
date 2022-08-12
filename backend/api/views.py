@@ -1,15 +1,15 @@
-from django.shortcuts import render
 from djoser.views import UserViewSet
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import decorators, filters, mixins, permissions, status, viewsets
+from rest_framework import (decorators, filters, mixins,
+                           permissions, status, viewsets)
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny
 
 from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
 from recipes.models import Ingredient, Recipe, Tag
-from .serializers import IngredientSerializer, RecipeSerializer, UsersSerializer, TagSerializer
+from .serializers import (IngredientSerializer, RecipeSerializer,
+                          UsersSerializer, TagSerializer)
 from users.models import Follow, User
 
 

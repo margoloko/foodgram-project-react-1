@@ -8,19 +8,22 @@ from .models import AmountIngredients, Ingredient, Recipe, Tag
  #   model = Recipe.ingredients.through
   #  extra = 3
 
-@admin.register(Tag, AmountIngredients)
+
+@register(Tag, AmountIngredients)
 class OtherAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Ingredient)
+
+@register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit',)
     list_filter = ('name',)
     save_on_top = True
 
-@admin.register(Recipe)
+
+@register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author',)
     list_filter = ('name', 'author__username', 'tags__name')
-    #save_on_top = True
+    save_on_top = True
     #inlines = (IngredientRecipeInLine, )
