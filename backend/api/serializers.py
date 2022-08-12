@@ -60,6 +60,21 @@ class IngredientSerializer(ModelSerializer):
         read_only_fields = ['id', 'name', 'measurement_unit',]
 
 
+class IngredientCreateSerializer(ModelSerializer):
+    """Сериализатор для добавления ингредиентов при создании рецепта."""
+    id = IntegerField()
+    amount = IntegerField(write_only=True)
+
+    class Meta:
+        model = AmountIngredients
+        fields = ('id', 'amount')
+
+    def validate_amount(self, amount):
+        if amount <= 0:
+            raise ValidationError('Значение должно быть больше 0.')
+        return amount
+
+
 class RecipeSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
     author = UsersSerializer(read_only=True)
