@@ -1,12 +1,16 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group
 from django.contrib.admin import register
 
 from .models import AmountIngredients, Ingredient, Recipe, Tag
 
 
-#class IngredientRecipeInLine(admin.TabularInline):
- #   model = Recipe.ingredients.through
-  #  extra = 3
+admin.site.unregister(Group)
+
+
+class IngredientRecipeInLine(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 3
 
 
 @register(Tag, AmountIngredients)
@@ -26,4 +30,4 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author',)
     list_filter = ('name', 'author__username', 'tags__name')
     save_on_top = True
-    #inlines = (IngredientRecipeInLine, )
+    inlines = (IngredientRecipeInLine, )

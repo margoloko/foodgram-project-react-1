@@ -1,6 +1,7 @@
 from djoser.views import UserViewSet
 from rest_framework.generics import get_object_or_404
-from rest_framework import (decorators, filters, mixins,
+from rest_framework.decorators import action
+from rest_framework import (filters, mixins,
                            permissions, status, viewsets)
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny
@@ -8,7 +9,8 @@ from rest_framework.permissions import AllowAny
 from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
 from recipes.models import Ingredient, Recipe, Tag
-from .serializers import (IngredientSerializer, RecipeSerializer,
+from .serializers import (IngredientSerializer,
+                          RecipeCreateSerializer, RecipeSerializer,
                           UsersSerializer, TagSerializer)
 from users.models import Follow, User
 
@@ -51,9 +53,18 @@ class IngredientViewSet(ListRetrieveViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    #serializer_class = RecipeSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AllowAny,)
     #permission_classes = (AdminOrAuthor,)
     filter_backends = (DjangoFilterBackend,)
     #filterset_fields = ('is_favorited', 'author', 'is_in_shopping_cart', 'tags',)
+
+    def get_serializer(self):
+        if self.request.method == 'GET':
+            return RecipeSerializer
+        return RecipeCreateSerializer
+
+    @action(methods=['POST'], detail=True)
+    def register(self, request):
+        serialized = UserSerializer(data=request.data)

@@ -1,3 +1,4 @@
+from logging.config import valid_ident
 from django.db.models import F
 from drf_extra_fields.fields import Base64ImageField
 from string import hexdigits
@@ -114,3 +115,40 @@ class RecipeSerializer(ModelSerializer):
             'id', 'name', 'measurement_unit',
             amount=F('amount_ingredient__amount'))
         return ingredients
+
+
+class RecipeCreateSerializer(ModelSerializer):
+    """Сериализатор для рецептов."""
+    author = UsersSerializer(read_only=True)
+    ingredients = IngredientSerializer(many=True)
+    tags = TagSerializer(many=True, read_only=True)
+    is_in_shopping_cart = SerializerMethodField()
+    is_favorited = SerializerMethodField()
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'tags', 'author', 'ingredients',
+                  'is_favorited', 'is_in_shopping_cart',
+                  'name', 'image', 'text', 'cooking_time')
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            return ShoppingCart.objects.filter(
+                user=user, recipe=obj).exists()
+        return False
+
+    def get_is_favorited(self, obj):
+        user = self.context.get('request').user
+        if user.is_authenticated:
+            return Favorite.objects.filter(
+                user=user, recipe=obj).exists()
+        return False
+
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients_data = validated_data.pop('ingredients')
+        recipe =Recipe.objects.create(**validated_data)
+        return recipe
+
