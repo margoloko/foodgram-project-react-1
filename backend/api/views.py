@@ -13,14 +13,6 @@ from .serializers import (IngredientSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
                           UsersSerializer, TagSerializer)
 from users.models import Follow, User
-
-
-class ListRetrieveViewSet(mixins.ListModelMixin,
-                          mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet):
-    pass
-
-
 #User = get_user_model()
 
 
@@ -34,14 +26,14 @@ class UsersViewSet(UserViewSet):
     search_fields = ('username', 'email')
 
 
-class TagViewSet(ListRetrieveViewSet):
+class TagViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели тэгов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
 
 
-class IngredientViewSet(ListRetrieveViewSet):
+class IngredientViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer

@@ -1,4 +1,5 @@
 from logging.config import valid_ident
+from django.shortcuts import get_object_or_404
 from django.db.models import F
 from drf_extra_fields.fields import Base64ImageField
 from string import hexdigits
@@ -55,7 +56,6 @@ class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
-        read_only_fields = ['id', 'name', 'slug', 'color', ]
 
 
 class IngredientSerializer(ModelSerializer):
@@ -63,7 +63,7 @@ class IngredientSerializer(ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
-        read_only_fields = ['id', 'name', 'measurement_unit', ]
+        #read_only_fields = ['id', 'name', 'measurement_unit', ]
 
 
 class IngredientCreateSerializer(ModelSerializer):
@@ -85,7 +85,7 @@ class RecipeSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
     author = UsersSerializer(read_only=True)
     ingredients = SerializerMethodField()
-    tags = TagSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True)
     is_in_shopping_cart = SerializerMethodField()
     is_favorited = SerializerMethodField()
     image = Base64ImageField()
@@ -116,16 +116,18 @@ class RecipeSerializer(ModelSerializer):
             amount=F('amount_ingredient__amount'))
         return ingredients
 
+
+
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
-        recipe.tags.set(tags)
+        recipes = Recipe.objects.create(**validated_data)
+        recipes.tags.set(tags)
         for ingredient in ingredients:
-            IngredientCreateSerializer.objects.get_or_create(recipe=recipe,
-            ingredients=ingredient['ingredient'],
-            amount=ingredient['amount'])
-        return recipe
+            IngredientCreateSerializer.objects.create(ingredient=get_object_or_404(Ingredient, id=ingredient['id']),
+                recipe=recipes, amount=ingredient['amount']
+            )
+        return recipes
 
     def update(self, recipe, validated_data):
         tags = validated_data.get('tags')
