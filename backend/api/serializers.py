@@ -116,6 +116,37 @@ class RecipeSerializer(ModelSerializer):
             amount=F('amount_ingredient__amount'))
         return ingredients
 
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        for ingredient in ingredients:
+            IngredientCreateSerializer.objects.get_or_create(recipe=recipe,
+            ingredients=ingredient['ingredient'],
+            amount=ingredient['amount'])
+        return recipe
+
+    def update(self, recipe, validated_data):
+        tags = validated_data.get('tags')
+        ingredients = validated_data.get('ingredients')
+        recipe.name = validated_data.get('name', recipe.name)
+        recipe.text = validated_data.get('text', recipe.text)
+        recipe.image = validated_data.get('image', recipe.image)
+        recipe.cooking_time = validated_data.get('cooking_time', recipe.cooking_time)
+
+        recipe.save()
+        return recipe
+
+
+
+
+
+
+
+
+
+
 
 class RecipeCreateSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
@@ -146,9 +177,7 @@ class RecipeCreateSerializer(ModelSerializer):
                 user=user, recipe=obj).exists()
         return False
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients_data = validated_data.pop('ingredients')
-        recipe =Recipe.objects.create(**validated_data)
-        return recipe
+
+
+
 
