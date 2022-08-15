@@ -47,7 +47,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitPagePagination
-
     permission_classes = (AdminOrAuthor,)
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('is_favorited', 'author', 'is_in_shopping_cart', 'tags',)
+    filterset_fields = ('author', 'tags',)

@@ -71,6 +71,9 @@ class Recipe(models.Model):
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class AmountIngredients(models.Model):
     '''Модель, описывающая количество ингридиентов.'''

@@ -81,6 +81,7 @@ class IngredientCreateSerializer(ModelSerializer):
         return amount
 
 
+
 class RecipeSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
     author = UsersSerializer(read_only=True)
@@ -121,13 +122,10 @@ class RecipeSerializer(ModelSerializer):
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipes = Recipe.objects.create(**validated_data)
-        recipes.tags.set(tags)
-        for ingredient in ingredients:
-            IngredientCreateSerializer.objects.create(ingredient=get_object_or_404(Ingredient, id=ingredient['id']),
-                recipe=recipes, amount=ingredient['amount']
-            )
-        return recipes
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags)
+        get_ingredients_for_recipe(recipe, ingredients)
+        return recipe
 
     def update(self, recipe, validated_data):
         tags = validated_data.get('tags')
@@ -141,13 +139,25 @@ class RecipeSerializer(ModelSerializer):
         return recipe
 
 
+class RecipeForFollowersSerializer(ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
+class FollowRecipeSerializer(ModelSerializer):
+    """Сериализатор для подписок."""
+    recipes = SerializerMethodField()
+    recipes_count = SerializerMethodField()
 
+    class Meta:
+        model = User
+        fields = ('email', 'id', 'username',
+                  'first_name', 'last_name',
+                  'recipes', 'recipes_count')
 
-
-
-
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
 
 
 class RecipeCreateSerializer(ModelSerializer):
