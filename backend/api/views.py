@@ -1,16 +1,20 @@
+from django.shortcuts import render
 from urllib import request
+from django.http import HttpResponse
 from djoser.views import UserViewSet
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import (filters, mixins,
                            permissions, status, viewsets)
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+
 from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import AmountIngredients, Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from .serializers import (FollowRecipeSerializer, IngredientSerializer,
                           RecipeCreateSerializer,
                           RecipeForFollowersSerializer,
@@ -28,6 +32,13 @@ class UsersViewSet(UserViewSet):
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     search_fields = ('username', 'email')
+
+    @action(detail=False, methods=['get'])
+    def subscriptions(self, request):
+        following = Follow.objects.filter(user=self.request.user)
+        pages = self.paginate_queryset(following)
+        serializer = FollowRecipeSerializer(pages, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class FollowViewSet(viewsets.ModelViewSet):
@@ -103,9 +114,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response({'message': 'Рецепт успешно удален из списка покупок'},
                         status=status.HTTP_200_OK)
 
-    @action(methods=['get'])
-    def download_shopping_cart(self,request):
-        pass
+    @action(detail=False, methods=['get'])
+    def download_shopping_cart(self, request):
+        recipes = list(
+            request.user.shopping_cart.all().values_list('recipe__id', flat=True)
+        )
+        ingredients = AmountIngredients.objects.filter(recipe__in=recipes).values('ingredients__name', 'ingredients__measurement_unit').annotate(amount=Sum('amount'))
+        data = ingredients.values_list('ingredients__name',
+                                       'ingredients__measurement_unit',
+                                       'amount')
+        shopping_cart = 'Список покупок: '
+        for name, measure, amount in data:
+            shopping_cart += (f'{name.capitalize()} {amount} {measure}, ')
+        response = HttpResponse(shopping_cart, content_type='text/plain')
+        #response['Content-Disposition'] = ('attachment' 'filename="shopping_cart.txt"')
+        return response
+
+
 
 
 

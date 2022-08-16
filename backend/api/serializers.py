@@ -147,7 +147,7 @@ class RecipeForFollowersSerializer(ModelSerializer):
 
 class FollowRecipeSerializer(ModelSerializer):
     """Сериализатор для подписок."""
-    recipes = SerializerMethodField()
+    recipes = RecipeForFollowersSerializer(many=True)
     recipes_count = SerializerMethodField()
 
     class Meta:
