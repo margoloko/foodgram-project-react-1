@@ -1,9 +1,9 @@
-from django.shortcuts import get_object_or_404
 from django.db.models import F
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.serializers import (ValidationError,
                                         IntegerField,
                                         ModelSerializer,
+                                        ReadOnlyField,
                                         SerializerMethodField,
                                         ValidationError, EmailField,
                                         CharField)
@@ -59,7 +59,6 @@ class IngredientSerializer(ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
-        #read_only_fields = ['id', 'name', 'measurement_unit', ]
 
 
 class IngredientCreateSerializer(ModelSerializer):
@@ -75,7 +74,6 @@ class IngredientCreateSerializer(ModelSerializer):
         if amount <= 0:
             raise ValidationError('Значение должно быть больше 0.')
         return amount
-
 
 
 class RecipeSerializer(ModelSerializer):
@@ -114,7 +112,6 @@ class RecipeSerializer(ModelSerializer):
         return ingredients
 
 
-
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
@@ -124,12 +121,13 @@ class RecipeSerializer(ModelSerializer):
         return recipe
 
     def update(self, recipe, validated_data):
-        tags = validated_data.get('tags')
-        ingredients = validated_data.get('ingredients')
+        validated_data.get('tags')
+        validated_data.get('ingredients')
         recipe.name = validated_data.get('name', recipe.name)
         recipe.text = validated_data.get('text', recipe.text)
         recipe.image = validated_data.get('image', recipe.image)
-        recipe.cooking_time = validated_data.get('cooking_time', recipe.cooking_time)
+        recipe.cooking_time = validated_data.get('cooking_time',
+                                                 recipe.cooking_time)
 
         recipe.save()
         return recipe
@@ -143,17 +141,22 @@ class RecipeForFollowersSerializer(ModelSerializer):
 
 class FollowRecipeSerializer(ModelSerializer):
     """Сериализатор для подписок."""
-    recipes = RecipeForFollowersSerializer(many=True)
-    recipes_count = SerializerMethodField()
+    #recipes = RecipeForFollowersSerializer(source='recipes', many=True)
+    #recipes_count = SerializerMethodField()
+    id = ReadOnlyField(source='author.id')
+    email = ReadOnlyField(source='author.email')
+    username = ReadOnlyField(source='author.username')
+    first_name = ReadOnlyField(source='author.first_name')
+    last_name = ReadOnlyField(source='author.last_name')
 
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
-                  'first_name', 'last_name',
-                  'recipes', 'recipes_count')
+                  'first_name', 'last_name',)
+                  #'recipes', 'recipes_count')
 
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
+    #def get_recipes_count(self, obj):
+    #    return obj.recipes.count()
 
 
 class RecipeCreateSerializer(ModelSerializer):
@@ -184,8 +187,3 @@ class RecipeCreateSerializer(ModelSerializer):
             return Favorite.objects.filter(
                 user=user, recipe=obj).exists()
         return False
-
-
-
-
-

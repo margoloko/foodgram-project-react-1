@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import F, Q
 
-
 MAX_LEN_FIELD = 150
 USER_HELP = ('Обязательно для заполнения. '
              f'Максимум {MAX_LEN_FIELD} букв.')
@@ -41,30 +40,26 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
-    """Модель для пользователя."""
+    """Модель для подписчика."""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='follower',
-        verbose_name='Подписчик',
-    )
+        verbose_name='Подписчик')
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following',
-        verbose_name='Автор',
-    )
+        verbose_name='Автор')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'author'],
-                name='Вы уже подписаны на данного автора'
-            ),
+                name='Вы уже подписаны на данного автора'),
             models.CheckConstraint(
                 check=~Q(user=F('author')),
-                name='Нельзя подписаться на себя'
-            )
+                name='Нельзя подписаться на себя')
         ]
         ordering = ['-id']
         verbose_name = 'Подписка'

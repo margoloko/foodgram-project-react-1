@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from urllib import request
 from django.http import HttpResponse
 from djoser.views import UserViewSet
@@ -32,7 +31,32 @@ class UsersViewSet(UserViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     search_fields = ('username', 'email')
 
-    @action(detail=False, methods=['get'])
+    def subscribed(self, serializer, id):
+        follower = get_object_or_404(User, id=id)
+        if self.request.user == follower:
+            return Response({'message': 'Нельзя подписаться на себя'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        follow = Follow.objects.get_or_create(user=self.request.user,
+                                              author=follower)
+        serializers = FollowRecipeSerializer(follow[0])
+        return Response(serializers.data, status=status.HTTP_201_CREATED)
+
+    def unsubscribed(self, serializer, id):
+        follower = get_object_or_404(User, id=id)
+        Follow.objects.filter(user=self.request.user,
+                              author=follower).delete()
+        return Response({'message': 'Вы успешно отписаны'},
+                        status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post', 'delete'],
+            permission_classes=[permissions.IsAuthenticated])
+    def subscribe(self, serializer, id):
+        if self.request.method == 'DELETE':
+            return self.unsubscribed(serializer, id)
+        return self.subscribed(serializer, id)
+
+    @action(detail=False, methods=['get'],
+            permission_classes=[permissions.IsAuthenticated])
     def subscriptions(self, request):
         following = Follow.objects.filter(user=self.request.user)
         pages = self.paginate_queryset(following)
@@ -81,7 +105,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['post', 'delete'],
+            permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
@@ -91,18 +116,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(data=serializer.data,
                             status=status.HTTP_201_CREATED)
         deleted = get_object_or_404(Favorite,
-                                         user=request.user,
-                                         recipe=recipe)
+                                    user=request.user,
+                                    recipe=recipe)
         deleted.delete()
         return Response({'message': 'Рецепт успешно удален из избранного'},
                         status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=['post', 'delete'],
+            permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         if request.method == 'POST':
             ShoppingCart.objects.create(user=request.user,
-                                    recipe=recipe)
+                                        recipe=recipe)
             serializer = RecipeForFollowersSerializer(recipe)
             return Response(data=serializer.data,
                             status=status.HTTP_201_CREATED)
@@ -116,9 +142,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def download_shopping_cart(self, request):
         recipes = list(
-            request.user.shopping_cart.all().values_list('recipe__id', flat=True)
+            request.user.shopping_cart.all().values_list(
+                'recipe__id', flat=True)
         )
-        ingredients = AmountIngredients.objects.filter(recipe__in=recipes).values('ingredients__name', 'ingredients__measurement_unit').annotate(amount=Sum('amount'))
+        ingredients = AmountIngredients.objects.filter(
+            recipe__in=recipes
+            ).values('ingredients__name',
+                     'ingredients__measurement_unit'
+            ).annotate(amount=Sum('amount'))
         data = ingredients.values_list('ingredients__name',
                                        'ingredients__measurement_unit',
                                        'amount')
