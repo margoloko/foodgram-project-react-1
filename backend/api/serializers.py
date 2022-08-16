@@ -1,13 +1,9 @@
-from logging.config import valid_ident
 from django.shortcuts import get_object_or_404
 from django.db.models import F
 from drf_extra_fields.fields import Base64ImageField
-from string import hexdigits
 from rest_framework.serializers import (ValidationError,
                                         IntegerField,
-                                        PrimaryKeyRelatedField,
                                         ModelSerializer,
-                                        ReadOnlyField,
                                         SerializerMethodField,
                                         ValidationError, EmailField,
                                         CharField)

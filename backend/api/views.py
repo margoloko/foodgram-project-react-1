@@ -11,17 +11,16 @@ from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-
 from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
-from recipes.models import AmountIngredients, Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import (AmountIngredients, Favorite, Ingredient,
+                            Recipe, ShoppingCart, Tag)
 from .serializers import (FollowRecipeSerializer, IngredientSerializer,
                           RecipeCreateSerializer,
                           RecipeForFollowersSerializer,
                           RecipeSerializer,
                           UsersSerializer, TagSerializer)
 from users.models import Follow, User
-#User = get_user_model()
 
 
 class UsersViewSet(UserViewSet):
@@ -129,10 +128,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response = HttpResponse(shopping_cart, content_type='text/plain')
         #response['Content-Disposition'] = ('attachment' 'filename="shopping_cart.txt"')
         return response
-
-
-
-
-
-
-
