@@ -14,20 +14,20 @@ from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
 from recipes.models import (AmountIngredients, Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag)
-from .serializers import (FollowRecipeSerializer, IngredientSerializer,
-                          RecipeCreateSerializer,
+from .serializers import (FollowSerializer, IngredientSerializer,
                           RecipeForFollowersSerializer,
                           RecipeSerializer,
                           UsersSerializer, TagSerializer)
-from users.models import Follow, User
+from users.models import Follow
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class UsersViewSet(UserViewSet):
     """Вьюсет для модели пользователей."""
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     pagination_class = LimitPagePagination
-    permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     search_fields = ('username', 'email')
 
@@ -38,7 +38,7 @@ class UsersViewSet(UserViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         follow = Follow.objects.get_or_create(user=self.request.user,
                                               author=follower)
-        serializers = FollowRecipeSerializer(follow[0])
+        serializers = FollowSerializer(follow[0])
         return Response(serializers.data, status=status.HTTP_201_CREATED)
 
     def unsubscribed(self, serializer, id):
@@ -60,15 +60,15 @@ class UsersViewSet(UserViewSet):
     def subscriptions(self, request):
         following = Follow.objects.filter(user=self.request.user)
         pages = self.paginate_queryset(following)
-        serializer = FollowRecipeSerializer(pages, many=True)
+        serializer = FollowSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
 
 
-class FollowViewSet(viewsets.ModelViewSet):
-    serializer_class = FollowRecipeSerializer
+class FollowViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = FollowSerializer
 
     def get_queryset(self):
-        return User.objects.filter(following__user=self.request.user)
+        return User.objects.filter(author__user=self.request.user)
 
 
 
