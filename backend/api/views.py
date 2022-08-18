@@ -4,8 +4,7 @@ from djoser.views import UserViewSet
 from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import (filters, mixins,
-                           permissions, status, viewsets)
+from rest_framework import (filters, permissions, status, viewsets)
 from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -22,6 +21,7 @@ from users.models import Follow, User
 #from django.contrib.auth import get_user_model
 
 #User = get_user_model()
+
 
 class UsersViewSet(UserViewSet):
     """Вьюсет для модели пользователей."""
@@ -70,7 +70,6 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AdminOrReadOnly,)
-    #pagination_class = None
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -85,8 +84,9 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
-    #serializer_classes = {  'retrieve': RecipeSerializer,  'list': RecipeSerializer,}
+    #serializer_class = RecipeCreateSerializer
+    #serializer_classes = {'retrieve': RecipeSerializer,
+    #                      'list': RecipeSerializer,}
     #default_serializer_class = RecipeCreateSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AdminOrAuthor,)
@@ -95,6 +95,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'list':
+            return RecipeSerializer
+        if self.action == 'retrieve':
             return RecipeSerializer
         return RecipeCreateSerializer
 
@@ -145,9 +147,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 'recipe__id', flat=True)
         )
         ingredients = AmountIngredients.objects.filter(
-            recipe__in=recipes
-            ).values('ingredients__name',
-                     'ingredients__measurement_unit'
+            recipe__in=recipes).values(
+                'ingredients__name',
+                'ingredients__measurement_unit'
             ).annotate(amount=Sum('amount'))
         data = ingredients.values_list('ingredients__name',
                                        'ingredients__measurement_unit',

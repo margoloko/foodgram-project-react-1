@@ -65,6 +65,7 @@ class IngredientSerializer(ModelSerializer):
 class IngredientCreateSerializer(ModelSerializer):
     """Сериализатор для добавления ингредиентов при создании рецепта."""
     id = IntegerField()
+
     class Meta:
         model = AmountIngredients
         fields = ('id', 'amount')
@@ -139,11 +140,15 @@ class RecipeCreateSerializer(ModelSerializer):
         for ingredient in ingredients:
             amount = ingredient['amount']
             if AmountIngredients.objects.filter(
-                    recipe=recipe, ingredients=get_object_or_404(Ingredient, id=ingredient['id'])).exists():
+                    recipe=recipe,
+                    ingredients=get_object_or_404(
+                        Ingredient, id=ingredient['id'])).exists():
                 amount += F('amount')
             AmountIngredients.objects.update_or_create(
-                recipe=recipe, ingredients=get_object_or_404(Ingredient, id=ingredient['id']),
-                defaults={'amount': amount} )
+                recipe=recipe,
+                ingredients=get_object_or_404(
+                    Ingredient, id=ingredient['id']),
+                defaults={'amount': amount})
 
     def create(self, validated_data):
         tags_data = validated_data.pop('tags')
@@ -188,7 +193,7 @@ class RecipeFollowUserField:
             recipes_data.append({
                     "id": recipes.id,
                     "name": recipes.name,
-                    #"image": recipe.image.url,
+                    "image": recipes.image.url,
                     "cooking_time": recipes.cooking_time,
                 })
         return recipes_data
@@ -209,15 +214,7 @@ class FollowSerializer(ModelSerializer):
         model = User
         fields = ('email', 'id', 'username',
                   'first_name', 'last_name',
-                  'recipes', 'recipes_count', )#'is_subscribed')
-
-
+                  'recipes', 'recipes_count',)#'is_subscribed')
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
-
-
-
-
-
-
