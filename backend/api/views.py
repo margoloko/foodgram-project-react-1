@@ -16,12 +16,12 @@ from recipes.models import (AmountIngredients, Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag)
 from .serializers import (FollowSerializer, IngredientSerializer,
                           RecipeForFollowersSerializer,
-                          RecipeSerializer,
+                          RecipeSerializer, RecipeCreateSerializer,
                           UsersSerializer, TagSerializer)
-from users.models import Follow
-from django.contrib.auth import get_user_model
+from users.models import Follow, User
+#from django.contrib.auth import get_user_model
 
-User = get_user_model()
+#User = get_user_model()
 
 class UsersViewSet(UserViewSet):
     """Вьюсет для модели пользователей."""
@@ -30,8 +30,9 @@ class UsersViewSet(UserViewSet):
     pagination_class = LimitPagePagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     search_fields = ('username', 'email')
+    permission_classes = (AllowAny,)
 
-    def subscribed(self, serializer, id):
+    def subscribed(self, serializer, id=None):
         follower = get_object_or_404(User, id=id)
         if self.request.user == follower:
             return Response({'message': 'Нельзя подписаться на себя'},
@@ -41,7 +42,7 @@ class UsersViewSet(UserViewSet):
         serializers = FollowSerializer(follow[0])
         return Response(serializers.data, status=status.HTTP_201_CREATED)
 
-    def unsubscribed(self, serializer, id):
+    def unsubscribed(self, serializer, id=None):
         follower = get_object_or_404(User, id=id)
         Follow.objects.filter(user=self.request.user,
                               author=follower).delete()
@@ -64,12 +65,6 @@ class UsersViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-class FollowViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = FollowSerializer
-
-    def get_queryset(self):
-        return User.objects.filter(author__user=self.request.user)
-
 
 
 
@@ -79,6 +74,7 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = None
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -93,11 +89,18 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
+    #serializer_classes = {  'retrieve': RecipeSerializer,  'list': RecipeSerializer,}
+    #default_serializer_class = RecipeCreateSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AdminOrAuthor,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('author', 'tags',)
+
+    def get_serializer_class(self):
+        """разделяет типы запросов на списковые и одиночные"""
+        if self.action in ('list', 'retrieve'):
+            return RecipeSerializer
+        return RecipeCreateSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
