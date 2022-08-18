@@ -65,16 +65,12 @@ class UsersViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-
-
-
-
 class TagViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели тэгов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AdminOrReadOnly,)
-    pagination_class = None
+    #pagination_class = None
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -89,6 +85,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
     #serializer_classes = {  'retrieve': RecipeSerializer,  'list': RecipeSerializer,}
     #default_serializer_class = RecipeCreateSerializer
     pagination_class = LimitPagePagination
@@ -97,8 +94,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filterset_fields = ('author', 'tags',)
 
     def get_serializer_class(self):
-        """разделяет типы запросов на списковые и одиночные"""
-        if self.action in ('list', 'retrieve'):
+        if self.action == 'list':
             return RecipeSerializer
         return RecipeCreateSerializer
 

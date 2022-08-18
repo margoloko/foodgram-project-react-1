@@ -14,8 +14,7 @@ from recipes.models import (AmountIngredients, Favorite,
                             Ingredient, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow, User
-#from django.contrib.auth import get_user_model
-#User = get_user_model()
+
 
 class CreateUserSerializer(UserCreateSerializer):
     """Сериализатор для регистрации пользователей."""
@@ -56,19 +55,6 @@ class TagSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class TagCreateSerializer(ModelSerializer):
-    """Сериализатор для тэгов."""
-    id = IntegerField()
-    class Meta:
-        model = Tag
-        fields = ('id',)
-
-    def to_representation(self, instance):
-        representation = TagSerializer(instance.recipes).data
-        representation['id'] = instance.id
-        return representation
-
-
 class IngredientSerializer(ModelSerializer):
     """Сериализатор для ингредиентов."""
     class Meta:
@@ -85,23 +71,17 @@ class IngredientCreateSerializer(ModelSerializer):
 
 
 class ShowIngredientsInRecipeSerializer(ModelSerializer):
-    """
-    Сериализатор для вывода ингредиентов в рецепте.
-    """
-    id = IntegerField()
-    name = ReadOnlyField(source='ingredient.name')
-    measurement_unit = ReadOnlyField(
-        source='ingredient.measurement_unit'
-    )
+    """Сериализатор для чтения ингредиентов в рецепте."""
+    id = ReadOnlyField(source='ingredients.id')
+    name = ReadOnlyField(source='ingredients.name')
+    measurement_unit = ReadOnlyField(source='ingredients.measurement_unit')
 
     class Meta:
         model = AmountIngredients
-        fields = (
-            'id',
-            'name',
-            'measurement_unit',
-            'amount',
-        )
+        fields = ('id', 'name',
+                  'measurement_unit',
+                  'amount',)
+
 
 class RecipeSerializer(ModelSerializer):
     """Сериализатор для рецептов."""
@@ -138,15 +118,11 @@ class RecipeSerializer(ModelSerializer):
         return ShowIngredientsInRecipeSerializer(ingredients, many=True).data
 
 
-
-
-
-
 class RecipeCreateSerializer(ModelSerializer):
-    """Сериализатор для добавления рецептов."""
+    """Сериализатор для создания рецептов."""
     ingredients = IngredientCreateSerializer(many=True)
     tags = PrimaryKeyRelatedField(queryset=Tag.objects.all(),
-                                              many=True)
+                                  many=True)
     image = Base64ImageField()
     name = CharField(max_length=200)
     cooking_time = IntegerField()
@@ -198,7 +174,8 @@ class RecipeForFollowersSerializer(ModelSerializer):
     """Сериализатор."""
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+        fields = ('id', 'name',
+                  'image', 'cooking_time')
 
 
 class RecipeFollowUserField:
