@@ -151,5 +151,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
         for name, measure, amount in data:
             shopping_cart += (f'{name.capitalize()} {amount} {measure}, ')
         response = HttpResponse(shopping_cart, content_type='text/plain')
-        #response['Content-Disposition'] = ('attachment' 'filename="shopping_cart.txt"')
         return response

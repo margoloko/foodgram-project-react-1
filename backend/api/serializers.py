@@ -1,12 +1,11 @@
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework.serializers import (ValidationError,
-                                        IntegerField, Field,
+from rest_framework.serializers import (Field, EmailField,
+                                        IntegerField,
                                         ModelSerializer,
                                         ReadOnlyField,
                                         SerializerMethodField,
-                                        ValidationError, EmailField,
                                         CharField, PrimaryKeyRelatedField)
 from rest_framework.validators import UniqueValidator
 from djoser.serializers import UserCreateSerializer, UserSerializer
