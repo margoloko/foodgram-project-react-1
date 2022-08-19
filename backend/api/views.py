@@ -37,7 +37,7 @@ class UsersViewSet(UserViewSet):
         if self.request.user == follower:
             return Response({'message': 'Нельзя подписаться на себя'},
                             status=status.HTTP_400_BAD_REQUEST)
-        follow = Follow.objects.get_or_create(user=self.request.user,
+        follow = User.objects.get_or_create(user=self.request.user,
                                               author=follower)
         serializers = FollowSerializer(follow[0])
         return Response(serializers.data, status=status.HTTP_201_CREATED)

@@ -185,6 +185,12 @@ class RecipeForFollowersSerializer(ModelSerializer):
 
 class RecipeFollowUserField:
     """Сериализатор для вывода рецептов в подписках."""
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name',
+                  'image', 'cooking_time')
+
     def get_attribute(self, instance):
         return Recipe.objects.filter(author=instance.author)
 
@@ -219,3 +225,14 @@ class FollowSerializer(ModelSerializer):
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
+
+    def get_recipes(self, obj):
+        request = self.context.get('request')
+        limit_recipes = request.query_params.get('recipes_limit')
+        if limit_recipes is not None:
+            recipes = obj.recipes.all()[:(int(limit_recipes))]
+        else:
+            recipes = obj.recipes.all()
+        context = {'request': request}
+        return RecipeForFollowersSerializer(recipes, many=True,
+                                      context=context).data
