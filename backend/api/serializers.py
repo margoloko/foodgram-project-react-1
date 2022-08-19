@@ -32,7 +32,7 @@ class CreateUserSerializer(UserCreateSerializer):
 
 
 class UsersSerializer(UserSerializer):
-    """Сериализатор пользователя."""
+    """Сериализатор пользователей."""
     is_subscribed = SerializerMethodField()
 
     class Meta:
@@ -71,7 +71,7 @@ class IngredientCreateSerializer(ModelSerializer):
         fields = ('id', 'amount')
 
 
-class ShowIngredientsInRecipeSerializer(ModelSerializer):
+class ReadIngredientsInRecipeSerializer(ModelSerializer):
     """Сериализатор для чтения ингредиентов в рецепте."""
     id = ReadOnlyField(source='ingredients.id')
     name = ReadOnlyField(source='ingredients.name')
@@ -116,7 +116,7 @@ class RecipeSerializer(ModelSerializer):
     @staticmethod
     def get_ingredients(obj):
         ingredients = AmountIngredients.objects.filter(recipe=obj)
-        return ShowIngredientsInRecipeSerializer(ingredients, many=True).data
+        return ReadIngredientsInRecipeSerializer(ingredients, many=True).data
 
 
 class RecipeCreateSerializer(ModelSerializer):
@@ -184,6 +184,7 @@ class RecipeForFollowersSerializer(ModelSerializer):
 
 
 class RecipeFollowUserField:
+    """Сериализатор для вывода рецептов в подписках."""
     def get_attribute(self, instance):
         return Recipe.objects.filter(author=instance.author)
 

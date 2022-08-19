@@ -3,8 +3,7 @@ from django.contrib.auth.models import Group
 from django.contrib.admin import register
 
 from .models import (AmountIngredients, Favorite, Ingredient,
-                     Recipe,
-                     Tag, ShoppingCart)
+                     Recipe, Tag, ShoppingCart)
 
 
 admin.site.unregister(Group)
