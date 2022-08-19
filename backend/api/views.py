@@ -30,7 +30,7 @@ class UsersViewSet(UserViewSet):
     pagination_class = LimitPagePagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     search_fields = ('username', 'email')
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
 
     def subscribed(self, serializer, id=None):
         follower = get_object_or_404(User, id=id)

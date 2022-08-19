@@ -7,8 +7,7 @@ from .models import User, Follow
 @register(User)
 class PersonAdmin(admin.ModelAdmin):
     list_display = ('username', 'first_name',
-                    'last_name', 'email',)
-    exclude = ('password',)
+                    'last_name', 'email', 'password')
     list_filter = ('first_name', 'email',)
     save_on_top = True
 

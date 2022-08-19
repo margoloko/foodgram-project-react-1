@@ -113,7 +113,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
@@ -125,7 +125,6 @@ DJOSER = {
                     'current_user': ('api.serializers.UsersSerializer')
                     },
     'PERMISSIONS': {'user': ('rest_framework.permissions.IsAuthenticated'),
-                    'user_create': ('rest_framework.permissions.AllowAny'),
                     'user_delete': ('rest_framework.permissions.IsAdminUser'),
                     },
 }
