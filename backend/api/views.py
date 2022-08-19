@@ -14,13 +14,10 @@ from .permissions import AdminOrAuthor, AdminOrReadOnly
 from recipes.models import (AmountIngredients, Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag)
 from .serializers import (FollowSerializer, IngredientSerializer,
-                          RecipeForFollowersSerializer,
+
                           RecipeSerializer, RecipeCreateSerializer,
                           UsersSerializer, TagSerializer)
 from users.models import Follow, User
-#from django.contrib.auth import get_user_model
-
-#User = get_user_model()
 
 
 class UsersViewSet(UserViewSet):

@@ -175,17 +175,8 @@ class RecipeCreateSerializer(ModelSerializer):
         return data
 
 
-class RecipeForFollowersSerializer(ModelSerializer):
-    """Сериализатор."""
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name',
-                  'image', 'cooking_time')
-
-
 class RecipeFollowUserField(Field):
     """Сериализатор для вывода рецептов в подписках."""
-
 
     def get_attribute(self, instance):
         return Recipe.objects.filter(author=instance.author)
@@ -211,24 +202,17 @@ class FollowSerializer(ModelSerializer):
     username = ReadOnlyField(source='author.username')
     first_name = ReadOnlyField(source='author.first_name')
     last_name = ReadOnlyField(source='author.last_name')
-    #is_subscribed = SerializerMethodField()
+    is_subscribed = SerializerMethodField()
 
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
-                  'first_name', 'last_name', 'recipes',
-                  'recipes_count',)#'is_subscribed')
+                  'first_name', 'last_name',
+                  'is_subscribed',
+                  'recipes', 'recipes_count')
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
 
-    def get_recipes(self, obj):
-        request = self.context.get('request')
-        limit_recipes = request.query_params.get('recipes_limit')
-        if limit_recipes is not None:
-            recipes = obj.recipes.all()[:(int(limit_recipes))]
-        else:
-            recipes = obj.recipes.all()
-        context = {'request': request}
-        return RecipeForFollowersSerializer(recipes, many=True,
-                                      context=context).data
+    def get_is_subscribed(self, obj):
+        return Follow.objects.filter(user=obj.user, author=obj.author).exists()
