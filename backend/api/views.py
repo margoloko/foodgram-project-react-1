@@ -37,10 +37,10 @@ class UsersViewSet(UserViewSet):
         if self.request.user == follower:
             return Response({'message': 'Нельзя подписаться на себя'},
                             status=status.HTTP_400_BAD_REQUEST)
-        follow = User.objects.get_or_create(user=self.request.user,
+        follow = Follow.objects.get_or_create(user=self.request.user,
                                               author=follower)
-        serializers = FollowSerializer(follow[0])
-        return Response(serializers.data, status=status.HTTP_201_CREATED)
+        serializer = FollowSerializer(follow[0])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def unsubscribed(self, serializer, id=None):
         follower = get_object_or_404(User, id=id)
@@ -58,11 +58,12 @@ class UsersViewSet(UserViewSet):
 
     @action(detail=False, methods=['get'],
             permission_classes=[permissions.IsAuthenticated])
-    def subscriptions(self, request):
+    def subscriptions(self, serializer):
         following = Follow.objects.filter(user=self.request.user)
         pages = self.paginate_queryset(following)
         serializer = FollowSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ModelViewSet):

@@ -2,7 +2,7 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework.serializers import (ValidationError,
-                                        IntegerField,
+                                        IntegerField, Field,
                                         ModelSerializer,
                                         ReadOnlyField,
                                         SerializerMethodField,
@@ -183,13 +183,9 @@ class RecipeForFollowersSerializer(ModelSerializer):
                   'image', 'cooking_time')
 
 
-class RecipeFollowUserField:
+class RecipeFollowUserField(Field):
     """Сериализатор для вывода рецептов в подписках."""
 
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name',
-                  'image', 'cooking_time')
 
     def get_attribute(self, instance):
         return Recipe.objects.filter(author=instance.author)
@@ -220,8 +216,8 @@ class FollowSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'id', 'username',
-                  'first_name', 'last_name',
-                  'recipes', 'recipes_count',)#'is_subscribed')
+                  'first_name', 'last_name', 'recipes',
+                  'recipes_count',)#'is_subscribed')
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()
