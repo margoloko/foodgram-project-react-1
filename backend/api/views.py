@@ -14,7 +14,7 @@ from .permissions import AdminOrAuthor, AdminOrReadOnly
 from recipes.models import (AmountIngredients, Favorite, Ingredient,
                             Recipe, ShoppingCart, Tag)
 from .serializers import (FollowSerializer, IngredientSerializer,
-
+                          RecipeForFollowersSerializer,
                           RecipeSerializer, RecipeCreateSerializer,
                           UsersSerializer, TagSerializer)
 from users.models import Follow, User
@@ -60,7 +60,6 @@ class UsersViewSet(UserViewSet):
         pages = self.paginate_queryset(following)
         serializer = FollowSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
-        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -82,10 +81,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
-    #serializer_class = RecipeCreateSerializer
-    #serializer_classes = {'retrieve': RecipeSerializer,
-    #                      'list': RecipeSerializer,}
-    #default_serializer_class = RecipeCreateSerializer
     pagination_class = LimitPagePagination
     permission_classes = (AdminOrAuthor,)
     filter_backends = (DjangoFilterBackend,)

@@ -175,6 +175,14 @@ class RecipeCreateSerializer(ModelSerializer):
         return data
 
 
+class RecipeForFollowersSerializer(ModelSerializer):
+    """Сериализатор для вывода рецептов в избранном и списке покупок."""
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name',
+                  'image', 'cooking_time')
+
+
 class RecipeFollowUserField(Field):
     """Сериализатор для вывода рецептов в подписках."""
 

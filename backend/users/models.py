@@ -8,7 +8,7 @@ USER_HELP = ('Обязательно для заполнения. '
 
 
 class User(AbstractUser):
-    '''Модель для пользователей.'''
+    """Модель для пользователей."""
     username = models.CharField('Уникальный юзернейм',
                                 max_length=MAX_LEN_FIELD,
                                 blank=False,
