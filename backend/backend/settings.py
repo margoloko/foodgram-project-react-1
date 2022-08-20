@@ -25,7 +25,7 @@ SECRET_KEY = '*(&dio12wo1kigd()+z@ij-iv81mr%82h8oi1vb57)$+f&6nrj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['158.160.7.48', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['158.160.7.48', '127.0.0.1', 'localhost', 'foodgram.myddns.me']
 
 
 # Application definition
