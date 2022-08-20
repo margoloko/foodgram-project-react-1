@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['158.160.7.48', '127.0.0.1', 'localhost', 'foodgram.myddns.me']
 
-
+load_dotenv()
 # Application definition
 
 INSTALLED_APPS = [
