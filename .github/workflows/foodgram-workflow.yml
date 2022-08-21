@@ -39,7 +39,7 @@ jobs:
       with:
         context: backend/
         push: true
-        tags: margoloko/foodgram
+        tags: margoloko/foodgram:latest
     #- name: Push frontend to Docker Hub
     #  uses: docker/build-push-action@v2
     #  with:
@@ -62,7 +62,7 @@ jobs:
           # Выполняет pull образа с DockerHub
 
 
-          sudo docker pull margoloko/foodgram
+          sudo docker pull margoloko/foodgram:latest
           sudo docker-compose stop
           sudo docker-compose rm backend
           touch .env
