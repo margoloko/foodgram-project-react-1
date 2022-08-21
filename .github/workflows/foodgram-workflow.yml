@@ -61,7 +61,6 @@ jobs:
         script: |
           # Выполняет pull образа с DockerHub
 
-
           sudo docker-compose stop
           sudo docker-compose rm backend
           touch .env
@@ -71,7 +70,6 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          sudo docker pull margoloko/foodgram
           sudo docker-compose up -d
         #  sudo docker-compose exec -T web python manage.py collectstatic --no-input
   send_message:
