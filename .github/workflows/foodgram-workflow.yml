@@ -61,7 +61,6 @@ jobs:
         script: |
           # Выполняет pull образа с DockerHub
           sudo docker pull ${{ secrets.USER }}/foodgram:v1
-          sudo docker pull ${{ secrets.USER }}/foodgram-front:v1
           sudo docker-compose stop
           sudo docker-compose rm backend
           rm .env
