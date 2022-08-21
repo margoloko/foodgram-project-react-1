@@ -191,12 +191,14 @@ class RecipeFollowUserField(Field):
     def to_representation(self, recipes_list):
         recipes_data = []
         for recipes in recipes_list:
-            recipes_data.append({
+            recipes_data.append(
+                {
                     "id": recipes.id,
                     "name": recipes.name,
                     "image": recipes.image.url,
                     "cooking_time": recipes.cooking_time,
-                })
+                }
+            )
         return recipes_data
 
 

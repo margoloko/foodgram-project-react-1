@@ -1,4 +1,3 @@
-from urllib import request
 from django.http import HttpResponse
 from djoser.views import UserViewSet
 from rest_framework.generics import get_object_or_404
@@ -142,8 +141,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = AmountIngredients.objects.filter(
             recipe__in=recipes).values(
                 'ingredients__name',
-                'ingredients__measurement_unit'
-            ).annotate(amount=Sum('amount'))
+                'ingredients__measurement_unit').annotate(
+                    amount=Sum('amount'))
         data = ingredients.values_list('ingredients__name',
                                        'ingredients__measurement_unit',
                                        'amount')
