@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,9 +26,10 @@ SECRET_KEY = '*(&dio12wo1kigd()+z@ij-iv81mr%82h8oi1vb57)$+f&6nrj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['158.160.7.48', '127.0.0.1', 'backend',
+                 'localhost', 'foodgram.myddns.me']
 
-load_dotenv()
+load_dotenv(dotenv_path='backend/.env')
 # Application definition
 
 INSTALLED_APPS = [
@@ -125,7 +125,7 @@ DJOSER = {
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 

@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from users.models import Follow, User
 
+from .filters import RecipesFilter
 from .pagination import LimitPagePagination
 from .permissions import AdminOrAuthor, AdminOrReadOnly
 from .serializers import (FollowSerializer, IngredientSerializer,
@@ -64,6 +65,7 @@ class TagViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели тэгов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
     permission_classes = (AdminOrReadOnly,)
 
 
@@ -72,6 +74,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AdminOrReadOnly,)
+    pagination_class = None
     filter_backends = (filters.SearchFilter,)
     search_fields = ('^name',)
 
@@ -79,10 +82,10 @@ class IngredientViewSet(viewsets.ModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для рецептов."""
     queryset = Recipe.objects.all()
-    pagination_class = LimitPagePagination
     permission_classes = (AdminOrAuthor,)
+    pagination_class = LimitPagePagination
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('author', 'tags',)
+    filterset_class = RecipesFilter
 
     def get_serializer_class(self):
         if self.action == 'list':
