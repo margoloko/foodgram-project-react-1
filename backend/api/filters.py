@@ -1,14 +1,14 @@
 from urllib import request
+
 from django_filters.rest_framework import (AllValuesMultipleFilter,
                                            BooleanFilter, FilterSet)
-
 from recipes.models import Recipe
 
 
 class RecipesFilter(FilterSet):
     """"Фильтр для сортировки рецептов."""""
     tags = AllValuesMultipleFilter(field_name='tags__slug',
-                                  label='tags')
+                                   label='tags')
     favorite = BooleanFilter(method='get_favorite')
     shopping_cart = BooleanFilter(method='get_shopping_cart')
 
