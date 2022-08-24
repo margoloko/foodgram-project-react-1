@@ -32,7 +32,7 @@
 ``` docker-compose exec backend python manage.py load_data ```
 -- -
 ### Для доступа в админ-зону:
-http://localhost/admin
+- http://localhost/admin
 - Используйте данные суперпользователя
 -- -
 ### Технологии:
