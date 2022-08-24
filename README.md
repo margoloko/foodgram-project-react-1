@@ -23,14 +23,16 @@
 - Запустите docker-compose в директории infra_sp2/infra командой
 ``` docker-compose up -d --build ```
 - Выполните миграции
-``` docker-compose exec web python manage.py migrate ```
+``` docker-compose exec backend python manage.py migrate ```
 - Создайте суперпользователя
-``` docker-compose exec web python manage.py createsuperuser ```
+``` docker-compose exec backend python manage.py createsuperuser ```
 - Для сбора статики воспользуйтесь командой
-``` docker-compose exec web python manage.py collectstatic --no-input ```
+``` docker-compose exec backend python manage.py collectstatic --no-input ```
+- Для загрузки базы данных ингрединтов
+``` docker-compose exec backend python manage.py load_data ```
 -- -
 ### Для доступа в админ-зону:
-foodgram.myddns.me/admin
+http://localhost/admin
 - Логин: adminadmin
 - Пароль: 123admin345
 -- -
