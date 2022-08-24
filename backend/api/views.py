@@ -145,8 +145,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         data = ingredients.values_list('ingredients__name',
                                        'ingredients__measurement_unit',
                                        'amount')
-        shopping_cart = 'Список покупок: '
+        shopping_cart = 'Список покупок:\n'
         for name, measure, amount in data:
-            shopping_cart += (f'{name.capitalize()} {amount} {measure}, ')
+            shopping_cart += (f'{name.capitalize()} {amount} {measure},\n')
         response = HttpResponse(shopping_cart, content_type='text/plain')
         return response

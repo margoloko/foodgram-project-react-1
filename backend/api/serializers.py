@@ -179,7 +179,7 @@ class RecipeCreateSerializer(ModelSerializer):
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise ValidationError(
-                    'Количество ингредиентовдолжно быть больше 0')
+                    'Количество ингредиентов должно быть больше 0')
         return ingredients
 
 
