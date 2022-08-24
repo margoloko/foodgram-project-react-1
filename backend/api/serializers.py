@@ -7,7 +7,7 @@ from recipes.models import (AmountIngredients, Favorite, Ingredient, Recipe,
 from rest_framework.serializers import (CharField, EmailField, Field,
                                         IntegerField, ModelSerializer,
                                         PrimaryKeyRelatedField, ReadOnlyField,
-                                        SerializerMethodField)
+                                        SerializerMethodField, ValidationError)
 from rest_framework.validators import UniqueValidator
 from users.models import Follow, User
 
@@ -169,6 +169,18 @@ class RecipeCreateSerializer(ModelSerializer):
             recipe,
             context={'request': self.context.get('request')}).data
         return data
+
+    def validate_cooking_time(self, cooking_time):
+        if cooking_time <= 0:
+            raise ValidationError('Время приготовления должно быть больше 0')
+        return cooking_time
+
+    def validate_ingredients(self, ingredients):
+        for ingredient in ingredients:
+            if int(ingredient['amount']) <= 0:
+                raise ValidationError(
+                    'Количество ингредиентовдолжно быть больше 0')
+        return ingredients
 
 
 class RecipeForFollowersSerializer(ModelSerializer):
