@@ -1,24 +1,34 @@
 version: '3.8'
 services:
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+  db:
+    image: postgres:13.0-alpine
     volumes:
-      - ../frontend/:/app/result_build/
+      - /var/lib/postgresql/data/
+    env_file:
+      - ./.env
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: margoloko/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+
+  frontend:
+    image: margoloko/foodgram-front:latest
+    volumes:
+      - ../frontend/:/app/result_build/
+    depends_on:
+      - db
 
   nginx:
     image: nginx:1.21.3-alpine
+    restart: always
     ports:
       - "80:80"
     volumes:
