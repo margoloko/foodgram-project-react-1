@@ -3,8 +3,6 @@
 Проект «Продуктовый помощник» создан для публикции рецептов.
 Это сайт, на котором пользователи будут публиковать рецепты, добавлять чужие рецепты в избранное и подписываться на публикации других авторов. Сервис «Список покупок» позволит пользователям создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
 -- -
-## Сайт доступен по адресу: foodgram.myddns.me
--- -
 ### Для запуска приложения в контейнерах:
 - Установите Docker
 - Клонируйте репозиторий
@@ -21,15 +19,17 @@
 - DB_PORT=5432
 -- -
 - Запустите docker-compose в директории infra_sp2/infra командой
-``` docker-compose up -d --build ```
+``` sudo docker-compose up -d --build ```
 - Выполните миграции
-``` docker-compose exec backend python manage.py migrate ```
+``` sudo docker-compose exec backend python manage.py migrate ```
 - Создайте суперпользователя
-``` docker-compose exec backend python manage.py createsuperuser ```
+``` sudo docker-compose exec backend python manage.py createsuperuser ```
 - Для сбора статики воспользуйтесь командой
-``` docker-compose exec backend python manage.py collectstatic --no-input ```
+``` sudo docker-compose exec backend python manage.py collectstatic --no-input ```
 - Для загрузки базы данных ингрединтов
-``` docker-compose exec backend python manage.py load_data ```
+``` sudo docker-compose exec backend python manage.py load_data ```
+cat dump.json | sudo docker exec -i a514f6feea1a psql -U postgres
+sudo docker-compose exec backend python manage.py loaddata dump.json
 -- -
 ### Для доступа в админ-зону:
 - http://localhost/admin
