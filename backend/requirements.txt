@@ -24,7 +24,6 @@ mccabe==0.7.0
 oauthlib==3.2.0
 pep8-naming==0.13.2
 Pillow==9.2.0
-psycopg2
 psycopg2-binary
 pycodestyle==2.9.1
 pycparser==2.21
