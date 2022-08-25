@@ -30,8 +30,6 @@
 ``` sudo docker-compose exec backend python manage.py collectstatic --no-input ```
 - Для загрузки базы данных ингрединтов
 ``` sudo docker-compose exec backend python manage.py load_data ```
-cat dump.json | sudo docker exec -i a514f6feea1a psql -U postgres
-sudo docker-compose exec backend python manage.py loaddata dump.json
 -- -
 ### Для доступа в админ-зону:
 foodgram.myddns.me/admin
